@@ -73,9 +73,9 @@ it('updates an inverter', function () {
     $inverter = Inverter::factory(['name' => '::old_name::'])->create();
     $inverterData = Inverter::factory(['name' => '::new_name::'])->make();
 
-    putJson(route('api.v1.inverters.update', ['inverter' => $inverter]), $inverterData ->toArray())
+    putJson(route('api.v1.inverters.update', ['inverter' => $inverter]), $inverterData->toArray())
         ->assertOk()
-        ->assertJson(['data' => $inverterData ->toArray()]);
+        ->assertJson(['data' => $inverterData->toArray()]);
 
     expect($inverter->fresh())
         ->toArray()->toMatchArray($inverterData->toArray());
@@ -89,4 +89,3 @@ it('deletes an inverter', function () {
     deleteJson(route('api.v1.inverters.destroy', ['inverter' => $inverter]))
         ->assertOk();
 });
-

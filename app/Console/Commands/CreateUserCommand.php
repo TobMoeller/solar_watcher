@@ -35,8 +35,7 @@ class CreateUserCommand extends Command
         $data['password'] = password(__('Password'));
         $data['password_confirmation'] = password(
             label: __('Confirm Password'),
-            validate: fn (string $value) =>
-                $value !== $data['password'] ? __('The confirmed Password does not match') : null
+            validate: fn (string $value) => $value !== $data['password'] ? __('The confirmed Password does not match') : null
         );
 
         $user = $createNewUserAction->create($data);

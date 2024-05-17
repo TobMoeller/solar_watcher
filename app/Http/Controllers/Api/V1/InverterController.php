@@ -27,6 +27,7 @@ class InverterController extends Controller
     public function store(StoreInverterRequest $request): JsonResource
     {
         $inverter = Inverter::create($request->validated());
+
         return app(InverterResource::class, ['resource' => $inverter]);
     }
 
@@ -38,12 +39,14 @@ class InverterController extends Controller
     public function update(UpdateInverterRequest $request, Inverter $inverter): JsonResource
     {
         $inverter->update($request->validated());
+
         return app(InverterResource::class, ['resource' => $inverter]);
     }
 
     public function destroy(Inverter $inverter): JsonResponse
     {
         $inverter->delete();
+
         return Response::json(['message' => __('Inverter :id successfully deleted', ['id' => $inverter->id])]);
     }
 }

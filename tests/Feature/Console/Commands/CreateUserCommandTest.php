@@ -14,6 +14,6 @@ test('creates a user', function () {
 
     assertDatabaseHas('users', [
         'name' => '::name::',
-        'email' => 'foo@bar.de'
+        'email' => 'foo@bar.de',
     ]);
 });
