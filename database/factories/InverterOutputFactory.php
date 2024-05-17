@@ -20,7 +20,7 @@ class InverterOutputFactory extends Factory
     {
         return [
             'inverter_id' => Inverter::factory(),
-            'output' => $this->faker->numberBetween(1, 900000),
+            'output' => $this->faker->randomFloat(2, 1, 900000),
             'timespan' => $this->faker->randomElement(TimespanUnit::cases()),
             'recorded_at' => $this->faker->dateTimeBetween('-5 years', 'now'),
         ];

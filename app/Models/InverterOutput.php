@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TimespanUnit;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,7 @@ class InverterOutput extends Model
 
     public $casts = [
         'recorded_at' => 'date:Y-m-d',
+        'timespan' => TimespanUnit::class,
     ];
 
     public $guarded = [];

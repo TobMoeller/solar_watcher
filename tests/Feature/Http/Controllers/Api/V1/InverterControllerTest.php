@@ -5,6 +5,7 @@ use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 
 use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\assertDatabaseMissing;
 use function Pest\Laravel\deleteJson;
 use function Pest\Laravel\getJson;
 use function Pest\Laravel\postJson;
@@ -88,4 +89,6 @@ it('deletes an inverter', function () {
 
     deleteJson(route('api.v1.inverters.destroy', ['inverter' => $inverter]))
         ->assertOk();
+
+    assertDatabaseMissing('inverters', ['id' => $inverter->id]);
 });
