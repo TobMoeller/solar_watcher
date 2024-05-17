@@ -92,5 +92,3 @@ it('deletes an inverter output', function () {
 
     assertDatabaseMissing('inverter_statuses', ['id' => $inverterStatus->id]);
 });
-
-

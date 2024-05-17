@@ -27,6 +27,7 @@ class InverterStatusController extends Controller
     public function store(StoreInverterStatusRequest $request): JsonResource
     {
         $inverterStatus = InverterStatus::create($request->validated());
+
         return app(InverterStatusResource::class, ['resource' => $inverterStatus]);
     }
 
@@ -38,6 +39,7 @@ class InverterStatusController extends Controller
     public function update(UpdateInverterStatusRequest $request, InverterStatus $inverterStatus): JsonResource
     {
         $inverterStatus->update($request->validated());
+
         return app(InverterStatusResource::class, ['resource' => $inverterStatus]);
     }
 

@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Models\Inverter;
 use App\Models\InverterOutput;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class InverterOutputPolicy
 {

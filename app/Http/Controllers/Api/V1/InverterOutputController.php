@@ -6,10 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\StoreInverterOutputRequest;
 use App\Http\Requests\Api\V1\UpdateInverterOutputRequest;
 use App\Http\Resources\Api\V1\InverterOutputCollection;
-use App\Models\InverterOutput;
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\Api\V1\InverterOutputResource;
+use App\Models\InverterOutput;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Response;
 
 class InverterOutputController extends Controller
@@ -27,6 +27,7 @@ class InverterOutputController extends Controller
     public function store(StoreInverterOutputRequest $request): JsonResource
     {
         $inverterOutput = InverterOutput::create($request->validated());
+
         return app(InverterOutputResource::class, ['resource' => $inverterOutput]);
     }
 
@@ -38,6 +39,7 @@ class InverterOutputController extends Controller
     public function update(UpdateInverterOutputRequest $request, InverterOutput $inverterOutput): JsonResource
     {
         $inverterOutput->update($request->validated());
+
         return app(InverterOutputResource::class, ['resource' => $inverterOutput]);
     }
 

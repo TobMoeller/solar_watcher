@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Inverter;
 use App\Models\InverterOutput;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
@@ -93,4 +92,3 @@ it('deletes an inverter output', function () {
 
     assertDatabaseMissing('inverter_outputs', ['id' => $inverterOutput->id]);
 });
-
