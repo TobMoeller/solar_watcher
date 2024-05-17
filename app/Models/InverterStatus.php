@@ -14,6 +14,8 @@ class InverterStatus extends Model
         'is_online' => 'boolean',
     ];
 
+    public $guarded = [];
+
     /**
      * @return BelongsTo<Inverter, InverterStatus>
      */
