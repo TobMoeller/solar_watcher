@@ -12,6 +12,8 @@ class Inverter extends Model
 {
     use HasFactory;
 
+    public $guarded = [];
+
     /**
      * @return HasMany<InverterOutput>
      */
