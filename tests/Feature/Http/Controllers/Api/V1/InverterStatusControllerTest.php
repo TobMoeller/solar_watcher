@@ -46,7 +46,7 @@ it('show all inverter outputs', function () {
         ->assertJson(['data' => $inverterStatus->where('id', '>', 10)->take(10)->values()->toArray()]);
 });
 
-it('shows a single inverter output', function () {
+it('shows a single inverter status', function () {
     Sanctum::actingAs($this->user, ['inverters:view']);
 
     $inverterStatus = InverterStatus::factory()->create();
@@ -56,7 +56,7 @@ it('shows a single inverter output', function () {
         ->assertJson(['data' => $inverterStatus->toArray()]);
 });
 
-it('stores an inverter output', function () {
+it('stores an inverter status', function () {
     Sanctum::actingAs($this->user, ['inverters:create']);
 
     $inverterStatus = InverterStatus::factory()->make();
@@ -68,7 +68,26 @@ it('stores an inverter output', function () {
     assertDatabaseHas('inverter_statuses', $inverterStatus->toArray());
 });
 
-it('updates an inverter output', function () {
+it('stores an inverter status without output data', function () {
+    Sanctum::actingAs($this->user, ['inverters:create']);
+
+    $inverterStatus = InverterStatus::factory()
+        ->state([
+            'udc' => null,
+            'idc' => null,
+            'pac' => null,
+            'pdc' => null,
+        ])
+        ->make();
+
+    postJson(route('api.v1.inverter-status.store'), $inverterStatus->toArray())
+        ->assertCreated()
+        ->assertJson(['data' => $inverterStatus->toArray()]);
+
+    assertDatabaseHas('inverter_statuses', $inverterStatus->toArray());
+});
+
+it('updates an inverter status', function () {
     Sanctum::actingAs($this->user, ['inverters:update']);
 
     $inverterStatus = InverterStatus::factory()->create();
@@ -82,7 +101,28 @@ it('updates an inverter output', function () {
         ->toArray()->toMatchArray($inverterOutputData->toArray());
 });
 
-it('deletes an inverter output', function () {
+it('updates an inverter status without output data', function () {
+    Sanctum::actingAs($this->user, ['inverters:update']);
+
+    $inverterStatus = InverterStatus::factory()->create();
+    $inverterOutputData = InverterStatus::factory()
+        ->state([
+            'udc' => null,
+            'idc' => null,
+            'pac' => null,
+            'pdc' => null,
+        ])
+        ->make();
+
+    putJson(route('api.v1.inverter-status.update', ['inverter_status' => $inverterStatus]), $inverterOutputData->toArray())
+        ->assertOk()
+        ->assertJson(['data' => $inverterOutputData->toArray()]);
+
+    expect($inverterStatus->fresh())
+        ->toArray()->toMatchArray($inverterOutputData->toArray());
+});
+
+it('deletes an inverter status', function () {
     Sanctum::actingAs($this->user, ['inverters:delete']);
 
     $inverterStatus = InverterStatus::factory()->create();
