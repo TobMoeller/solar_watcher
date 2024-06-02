@@ -56,17 +56,21 @@ it('shows a single inverter status', function () {
         ->assertJson(['data' => $inverterStatus->toArray()]);
 });
 
-it('stores an inverter status', function () {
+it('stores an inverter status', function (bool $negative) {
     Sanctum::actingAs($this->user, ['inverters:create']);
 
-    $inverterStatus = InverterStatus::factory()->make();
+    $inverterStatus = InverterStatus::factory()
+        ->state([
+            'idc' => fake()->randomFloat(2, $negative ? -10 : 0, $negative ? 0 : 30_000)
+        ])
+        ->make();
 
     postJson(route('api.v1.inverter-status.store'), $inverterStatus->toArray())
         ->assertCreated()
         ->assertJson(['data' => $inverterStatus->toArray()]);
 
     assertDatabaseHas('inverter_statuses', $inverterStatus->toArray());
-});
+})->with(['negative idc' => true, 'positive idc' => false]);
 
 it('stores an inverter status without output data', function () {
     Sanctum::actingAs($this->user, ['inverters:create']);
@@ -87,11 +91,15 @@ it('stores an inverter status without output data', function () {
     assertDatabaseHas('inverter_statuses', $inverterStatus->toArray());
 });
 
-it('updates an inverter status', function () {
+it('updates an inverter status', function (bool $negative) {
     Sanctum::actingAs($this->user, ['inverters:update']);
 
     $inverterStatus = InverterStatus::factory()->create();
-    $inverterOutputData = InverterStatus::factory()->make();
+    $inverterOutputData = InverterStatus::factory()
+        ->state([
+            'idc' => fake()->randomFloat(2, $negative ? -10 : 0, $negative ? 0 : 30_000)
+        ])
+        ->make();
 
     putJson(route('api.v1.inverter-status.update', ['inverter_status' => $inverterStatus]), $inverterOutputData->toArray())
         ->assertOk()
@@ -99,7 +107,7 @@ it('updates an inverter status', function () {
 
     expect($inverterStatus->fresh())
         ->toArray()->toMatchArray($inverterOutputData->toArray());
-});
+})->with(['negative idc' => true, 'positive idc' => false]);
 
 it('updates an inverter status without output data', function () {
     Sanctum::actingAs($this->user, ['inverters:update']);
