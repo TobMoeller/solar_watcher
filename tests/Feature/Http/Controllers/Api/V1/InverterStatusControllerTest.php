@@ -61,7 +61,7 @@ it('stores an inverter status', function (bool $negative) {
 
     $inverterStatus = InverterStatus::factory()
         ->state([
-            'idc' => fake()->randomFloat(2, $negative ? -10 : 0, $negative ? 0 : 30_000)
+            'idc' => fake()->randomFloat(2, $negative ? -10 : 0, $negative ? 0 : 30_000),
         ])
         ->make();
 
@@ -97,7 +97,7 @@ it('updates an inverter status', function (bool $negative) {
     $inverterStatus = InverterStatus::factory()->create();
     $inverterOutputData = InverterStatus::factory()
         ->state([
-            'idc' => fake()->randomFloat(2, $negative ? -10 : 0, $negative ? 0 : 30_000)
+            'idc' => fake()->randomFloat(2, $negative ? -10 : 0, $negative ? 0 : 30_000),
         ])
         ->make();
 
