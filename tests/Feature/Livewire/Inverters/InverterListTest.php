@@ -1,7 +1,9 @@
 <?php
 
+use App\Enums\TimespanUnit;
 use App\Livewire\Inverters\InverterList;
 use App\Models\Inverter;
+use App\Models\InverterOutput;
 use App\Models\InverterStatus;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Livewire\Livewire;
@@ -18,11 +20,20 @@ it('renders inverter list', function (bool $online) {
             'pdc' => 4444.44,
         ])
         ->create();
+    InverterOutput::factory()
+        ->for($inverter)
+        ->state([
+            'recorded_at' => now(),
+            'output' => 9999.99,
+            'timespan' => TimespanUnit::DAY,
+        ])
+        ->create();
 
     Livewire::test(InverterList::class)
         ->assertOk()
         ->assertSee([
             $online ? __('Online') : __('Offline'),
+            '9999.99',
             'UDC',
             '1111.11',
             'IDC',
