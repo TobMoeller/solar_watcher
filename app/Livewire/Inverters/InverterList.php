@@ -2,7 +2,9 @@
 
 namespace App\Livewire\Inverters;
 
+use App\Enums\TimespanUnit;
 use App\Models\Inverter;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -24,7 +26,13 @@ class InverterList extends Component
     public function inverters(): LengthAwarePaginator
     {
         return Inverter::query()
-            ->with('latestStatus')
+            ->with([
+                'latestStatus',
+                'outputs' => function (Builder $query) {
+                    $query->whereDate('recorded_at', now())
+                        ->where('timespan', TimespanUnit::DAY);
+                },
+            ])
             ->paginate(10);
     }
 }

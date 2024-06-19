@@ -9,9 +9,6 @@
                             {{ $inverter->name }}
                         </h2>
                         <div class="flex flex-row gap-2 mt-1">
-                            <div class="text-gray-400">
-                                {{ $inverter->is_online ? __('Online') : __('Offline') }}
-                            </div>
                             <div>
                                 @if($inverter->is_online)
                                     {{-- heroicons check-circle @TODO install blade-ui-kit --}}
@@ -27,7 +24,26 @@
                                     </svg>
                                 @endif
                             </div>
+                            <div class="text-gray-400">
+                                {{ $inverter->is_online ? __('Online') : __('Offline') }}
+                            </div>
                         </div>
+                        @if($output = $inverter->outputs->sortByDesc('updated_at')->first()?->output)
+                            <div class="flex flex-row gap-2 mt-1">
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                        class="h-5 w-5 stroke-yellow-500">
+                                      <path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    {{ $output }}
+                                    <span class="text-gray-400">
+                                        kWh
+                                    </span>
+                                </div>
+                            </div>
+                        @endif
                         @if($status = $inverter->latestStatus)
                             <div class="grid grid-cols-2 mt-1">
                                 @foreach(['udc', 'idc', 'pac', 'pdc'] as $attribute)
