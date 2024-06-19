@@ -1,2 +1,2 @@
-<x-ui.svg-logo {{ $attributes->merge(['class' => 'fill-white']) }} />
+<x-ui.svg-logo {{ $attributes->merge(['class' => 'fill-yellow-500']) }} />
 
