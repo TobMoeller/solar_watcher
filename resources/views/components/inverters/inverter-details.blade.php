@@ -1,7 +1,7 @@
 @props(['attributes', 'inverter'])
 <div {{ $attributes->merge(['class' => 'flex flex-col gap-2']) }}>
     <div class="flex flex-row gap-2">
-        <div>
+        <div class="w-6 flex justify-center">
             @if($inverter->is_online)
                 {{-- heroicons check-circle @TODO install blade-ui-kit --}}
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -16,14 +16,20 @@
                 </svg>
             @endif
         </div>
-        <div class="text-gray-400">
-            {{ $inverter->is_online ? __('Online') : __('Offline') }}
-        </div>
+        @if($inverter->is_online)
+            <div>
+                {{ __('Online') }}
+            </div>
+        @else
+            <div class="text-gray-400">
+                {{ __('Offline') }}
+            </div>
+        @endif
     </div>
     <div class="flex flex-col gap-2 sm:flex-row sm:justify-between">
         @if($inverter->outputs->count() > 0)
-            <div class="flex flex-row gap-3">
-                <div>
+            <div class="flex flex-row gap-2">
+                <div class="w-6 flex justify-center">
                     {{-- heroicons bolt --}}
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                         class="h-5 w-5 stroke-yellow-500">
@@ -54,8 +60,8 @@
             </div>
         @endif
         @if($status = $inverter->latestStatus)
-            <div class="flex flex-row gap-3">
-                <div>
+            <div class="flex flex-row gap-2">
+                <div class="w-6 flex justify-center">
                     {{-- heroicons arrows-up-down --}}
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                         class="h-5 w-5 stroke-purple-500">
