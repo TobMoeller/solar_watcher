@@ -4,6 +4,8 @@ namespace App\Livewire\Inverters;
 
 use App\Enums\TimespanUnit;
 use App\Models\Inverter;
+use App\Services\Breadcrumbs\Breadcrumb;
+use App\Services\Breadcrumbs\Breadcrumbs;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -15,8 +17,13 @@ class InverterShow extends Component
 
     public function render(): View
     {
+        $header = $this->inverter->name ?? __('Inverter Info');
+
+        Breadcrumbs::add(new Breadcrumb(__('Dashboard'), route('guests.inverters.list')));
+        Breadcrumbs::add(new Breadcrumb($header, null, true));
+
         return view('livewire.inverters.inverter-show')
-            ->layout(Auth::check() ? 'layouts.app' : 'layouts.guest', ['header' => $this->inverter->name ?? __('Inverter Info')]);
+            ->layout(Auth::check() ? 'layouts.app' : 'layouts.guest', ['header' => $header]);
     }
 
     public function boot(): void

@@ -6,6 +6,7 @@ use App\Models\Inverter;
 use App\Models\InverterOutput;
 use App\Models\InverterStatus;
 use App\Models\User;
+use App\Services\Breadcrumbs\Breadcrumbs;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Livewire\Livewire;
 
@@ -128,3 +129,18 @@ it('finds the correct detail data', function () {
         ->outputs->pluck('id')->toArray()->toMatchArray([1, 2, 3]);
 });
 
+it('has breadcrumbs', function () {
+    $inverter = Inverter::factory()->create();
+
+    Livewire::test(InverterShow::class, ['inverter' => $inverter]);
+
+    expect(count(Breadcrumbs::all()))
+        ->toBe(2)
+        ->and(Breadcrumbs::all()[0])
+        ->label->toBe(__('Dashboard'))
+        ->route->toBe(route('guests.inverters.list'))
+        ->and(Breadcrumbs::all()[1])
+        ->label->toBe($inverter->name)
+        ->route->toBe(null)
+        ->active->toBeTrue();
+});

@@ -4,6 +4,8 @@ namespace App\Livewire\Inverters;
 
 use App\Enums\TimespanUnit;
 use App\Models\Inverter;
+use App\Services\Breadcrumbs\Breadcrumb;
+use App\Services\Breadcrumbs\Breadcrumbs;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
@@ -15,6 +17,8 @@ class InverterList extends Component
 {
     public function render(): View
     {
+        Breadcrumbs::add(new Breadcrumb(__('Dashboard'), null, true));
+
         return view('livewire.inverters.inverter-list')
             ->layout(Auth::check() ? 'layouts.app' : 'layouts.guest', ['header' => __('Inverters')]);
     }
