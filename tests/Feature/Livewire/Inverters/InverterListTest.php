@@ -42,6 +42,7 @@ it('renders inverter list', function (bool $online) {
             '3333.33',
             'PDC',
             '4444.44',
+            route('guests.inverters.show', ['inverter' => $inverter]),
         ]);
 })->with([true, false]);
 

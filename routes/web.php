@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Inverters\InverterList;
+use App\Livewire\Inverters\InverterShow;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/guests/inverters');
@@ -17,3 +18,5 @@ Route::middleware([
 
 Route::get('/guests/inverters', InverterList::class)
     ->name('guests.inverters.list');
+Route::get('/guests/inverter/{inverter}', InverterShow::class)
+    ->name('guests.inverters.show');

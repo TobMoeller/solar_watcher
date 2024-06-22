@@ -4,7 +4,7 @@
         <ul class="grid grid-cols-2" wire:poll.300s>
             @foreach ($this->inverters as $inverter)
                 <li class="lg:p-8 p-2 text-white border-b odd:border-r border-gray-700 hover:bg-gray-700">
-                    <a href="#">
+                    <a href="{{ route('guests.inverters.show', ['inverter' => $inverter]) }}">
                         <h2 class="text-lg font-semibold">
                             {{ $inverter->name }}
                         </h2>
