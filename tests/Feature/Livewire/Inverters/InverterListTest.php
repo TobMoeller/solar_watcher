@@ -5,6 +5,7 @@ use App\Livewire\Inverters\InverterList;
 use App\Models\Inverter;
 use App\Models\InverterOutput;
 use App\Models\InverterStatus;
+use App\Services\Breadcrumbs\Breadcrumbs;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Livewire\Livewire;
 
@@ -42,6 +43,7 @@ it('renders inverter list', function (bool $online) {
             '3333.33',
             'PDC',
             '4444.44',
+            route('guests.inverters.show', ['inverter' => $inverter]),
         ]);
 })->with([true, false]);
 
@@ -75,4 +77,15 @@ it('displays multiple inverters', function () {
         ->toBeInstanceOf(LengthAwarePaginator::class)
         ->count()->toBe(10)
         ->first()->relationLoaded('latestStatus')->toBeTrue();
+});
+
+it('has breadcrumbs', function () {
+    Livewire::test(InverterList::class);
+
+    expect(count(Breadcrumbs::all()))
+        ->toBe(1)
+        ->and(Breadcrumbs::all()[0])
+        ->label->toBe(__('Dashboard'))
+        ->route->toBe(null)
+        ->active->toBeTrue();
 });
