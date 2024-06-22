@@ -27,7 +27,7 @@ it('renders breadcrumbs in guest layout', function () {
     Breadcrumbs::add(new Breadcrumb('::label::', '::route::', false));
     Breadcrumbs::add(new Breadcrumb('::label2::', '::route2::', true));
 
-    $view = Blade::render(<<<BLADE
+    $view = Blade::render(<<<'BLADE'
         <x-guest-layout>
             TEST
         </x-guest-layout>
@@ -48,7 +48,7 @@ it('renders breadcrumbs in app layout', function () {
 
     actingAs(User::factory()->create());
 
-    $view = Blade::render(<<<BLADE
+    $view = Blade::render(<<<'BLADE'
         <x-app-layout>
             TEST
         </x-app-layout>

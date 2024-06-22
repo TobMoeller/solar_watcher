@@ -11,4 +11,3 @@ class Breadcrumbs extends Facade
         return BreadcrumbService::class;
     }
 }
-
