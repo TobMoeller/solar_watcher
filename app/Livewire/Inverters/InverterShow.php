@@ -8,6 +8,8 @@ use App\Services\Breadcrumbs\Breadcrumb;
 use App\Services\Breadcrumbs\Breadcrumbs;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -46,5 +48,28 @@ class InverterShow extends Component
                     });
             },
         ]);
+    }
+
+    /**
+     * @return array<int, array<string, string>>
+     */
+    public function getMonthlyOutputForYear(int $year): array
+    {
+        $output =  $this->inverter->outputs()
+            ->whereYear('recorded_at', $year)
+            ->where('timespan', TimespanUnit::MONTH)
+            ->orderBy('recorded_at')
+            ->get();
+
+        return Collection::make(range(1, 12))
+            ->map(function (int $month) use ($year, $output): array {
+                $date = Carbon::create($year, $month)?->startOfMonth();
+                $monthlyOutput = $output->where('recorded_at', $date)->first();
+                return [
+                    'output' => $monthlyOutput?->output ?? '0',
+                    'month' => $date?->locale('EN_en')->monthName,
+                ];
+            })
+            ->toArray();
     }
 }

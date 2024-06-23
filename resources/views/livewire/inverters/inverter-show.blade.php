@@ -5,4 +5,9 @@
         </h2>
         <x-inverters.inverter-details :inverter="$this->inverter" class="mt-4" />
     </section>
+    <section class="mt-8" x-data="inverterCharts">
+        <div class="relative w-full lg:w-2/3">
+            <canvas id="inverter-chart"></canvas>
+        </div>
+    </section>
 </div>

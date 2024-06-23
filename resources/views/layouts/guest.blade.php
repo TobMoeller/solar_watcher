@@ -33,6 +33,6 @@
             </x-ui.main>
         </div>
 
-        @livewireScripts
+        @livewireScriptConfig
     </body>
 </html>
