@@ -11,6 +11,16 @@ parameters:
 			path: app/Actions/Fortify/UpdateUserProfileInformation.php
 
 		-
+			message: "#^Cannot access property \\$monthName on Illuminate\\\\Support\\\\Carbon\\|string\\.$#"
+			count: 1
+			path: app/Livewire/Inverters/InverterShow.php
+
+		-
+			message: "#^Method App\\\\Livewire\\\\Inverters\\\\InverterShow\\:\\:getMonthlyOutputForYear\\(\\) should return array\\<int, array\\<string, string\\>\\> but returns array\\.$#"
+			count: 1
+			path: app/Livewire/Inverters/InverterShow.php
+
+		-
 			message: "#^Parameter \\#1 \\$value of static method Illuminate\\\\Support\\\\Str\\:\\:lower\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: app/Providers/FortifyServiceProvider.php
