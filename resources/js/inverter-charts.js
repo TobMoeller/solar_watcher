@@ -5,9 +5,16 @@ export default (initialElementId = 'inverter-chart') => ({
     elementName: initialElementId,
     defaultOptions: {
         responsive: true,
-        maintainAspectRatio: true
+        maintainAspectRatio: true,
+        elements: {
+            bar: {
+                backgroundColor: '#eab308'
+            }
+        }
     },
     init() {
+        Chart.defaults.borderColor = '#9ca3af20';
+        Chart.defaults.color = '#9ca3af';
         this.createMonthlyOutputChartForYear(new Date().getFullYear());
     },
     livewire() {
