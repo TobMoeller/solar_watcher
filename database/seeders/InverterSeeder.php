@@ -78,7 +78,7 @@ class InverterSeeder extends Seeder
                     'updated_at' => $date,
                 ];
             }))
-            ->count(30 * 24 * (60/5)) // 1 month of data
+            ->count(30 * 24 * (60 / 5)) // 1 month of data
             ->create();
     }
 }

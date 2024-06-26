@@ -144,3 +144,8 @@ it('has breadcrumbs', function () {
         ->route->toBe(null)
         ->active->toBeTrue();
 });
+
+it('returns years')->todo();
+it('returns months')->todo();
+it('returns monthly output for a year')->todo();
+it('returns daily output for a month')->todo();
