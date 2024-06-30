@@ -60,10 +60,11 @@
                                 </svg>
                             </div>
                             <div class="grid grid-cols-2 w-full">
-                                @foreach(['udc', 'idc', 'pac', 'pdc'] as $attribute)
+                                @foreach(['udc' => 'V', 'idc' => 'A', 'pac' => 'W', 'pdc' => 'W'] as $attribute => $unit)
                                     <div class="flex md:flex-row flex-col md:gap-2">
                                         <span class="text-gray-400">{{ Str::upper($attribute) }}:</span>
                                         <span>{{ $status->$attribute ?? '0' }}</span>
+                                        <span class="text-gray-400 hidden md:block">{{ $unit }}</span>
                                     </div>
                                 @endforeach
                             </div>
