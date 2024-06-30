@@ -145,7 +145,82 @@ it('has breadcrumbs', function () {
         ->active->toBeTrue();
 });
 
-it('returns years')->todo();
-it('returns months')->todo();
+it('returns selectable years', function () {
+    $inverter = Inverter::factory()->create();
+    InverterOutput::factory()
+        ->for($inverter)
+        ->state(new Sequence(
+            [
+                'recorded_at' => '2024-01-01',
+                'timespan' => TimespanUnit::DAY,
+            ],
+            [
+                'recorded_at' => '2022-01-01',
+                'timespan' => TimespanUnit::MONTH,
+            ],
+            [
+                'recorded_at' => '2023-01-01',
+                'timespan' => TimespanUnit::MONTH,
+            ],
+        ))
+        ->count(3)
+        ->create();
+
+    $livewire = Livewire::test(InverterShow::class, ['inverter' => $inverter]);
+
+    expect($livewire->get('selectableYears'))
+        ->toBe([2023, 2022]);
+});
+
+it('returns selectable months', function () {
+    $inverter = Inverter::factory()->create();
+    InverterOutput::factory()
+        ->for($inverter)
+        ->state(new Sequence(
+            [
+                'recorded_at' => '2024-01-01',
+                'timespan' => TimespanUnit::MONTH,
+            ],
+            [
+                'recorded_at' => '2024-03-01',
+                'timespan' => TimespanUnit::DAY,
+            ],
+            [
+                'recorded_at' => '2024-02-01',
+                'timespan' => TimespanUnit::DAY,
+            ],
+        ))
+        ->count(3)
+        ->create();
+
+    $livewire = Livewire::test(InverterShow::class, ['inverter' => $inverter])
+        ->set('selectedYear', 2024);
+
+    expect($livewire->get('selectableMonths'))
+        ->toBe([2, 3]);
+});
+
+test('getMonthlyOutputForYear returns an error message for invalid date', function () {
+    $inverter = Inverter::factory()->create();
+
+    Livewire::test(InverterShow::class, ['inverter' => $inverter])
+        ->set('selectedYear', null)
+        ->call('getMonthlyOutputForYear')
+        ->assertReturned(['error' => 'Invalid Date']);
+});
+
+test('getDailyOutputForMonth returns an error message for invalid date', function (?int $selectedYear, ?int $selectedMonth) {
+    $inverter = Inverter::factory()->create();
+
+    Livewire::test(InverterShow::class, ['inverter' => $inverter])
+        ->set('selectedYear', $selectedYear)
+        ->set('selectedMonth', $selectedMonth)
+        ->call('getDailyOutputForMonth')
+        ->assertReturned(['error' => 'Invalid Date']);
+})->with([
+    ['selectedYear' => 2024, 'selectedMonth' => null],
+    ['selectedYear' => null, 'selectedMonth' => 2],
+]);
+
 it('returns monthly output for a year')->todo();
 it('returns daily output for a month')->todo();

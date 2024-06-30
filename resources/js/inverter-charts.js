@@ -1,7 +1,10 @@
 import { Chart } from "chart.js/auto";
 import { Livewire } from "../../vendor/livewire/livewire/dist/livewire.esm";
 
-export default (initialElementId = 'inverter-chart') => ({
+export default (
+    livewire = Livewire.getByName('inverters.inverter-show')[0],
+    initialElementId = 'inverter-chart'
+) => ({
     elementName: initialElementId,
     defaultOptions: {
         responsive: true,
@@ -12,41 +15,43 @@ export default (initialElementId = 'inverter-chart') => ({
             }
         }
     },
-    selectedYear: new Date().getFullYear(),
-    selectedMonth: null,
+    selectedYear: livewire.entangle('selectedYear'),
+    selectedMonth: livewire.entangle('selectedMonth'),
+    error: null,
 
     init() {
         Chart.defaults.borderColor = '#9ca3af20';
         Chart.defaults.color = '#9ca3af';
-        this.createMonthlyOutputChartForYear(this.selectedYear);
-    },
 
-    livewire() {
-        return Livewire.find(this.$el.closest('[wire\\:id]')?.getAttribute('wire:id')) ?? null;
+        if (this.selectedYear && this.selectedMonth) {
+            this.createDailyOutputChartForMonth();
+        } else if (this.selectedYear) {
+            this.createMonthlyOutputChartForYear();
+        }
     },
 
     setYear(year) {
         this.selectedYear = year;
-        this.selectMonth = null;
-        this.createMonthlyOutputChartForYear(year);
+        this.selectedMonth = null;
+        this.createMonthlyOutputChartForYear();
     },
 
     isYearSelected(year) {
         return this.selectedYear === year;
     },
 
-    setMonth(year, month) {
-        this.selectedYear = year;
-        this.selectMonth = month;
-        this.createDailyOutputChartForMonth(year, month);
+    setMonth(month) {
+        this.selectedMonth = month;
+        this.createDailyOutputChartForMonth();
     },
 
-    isMonthSelected(year, month) {
-        return this.selectedYear === year && this.selectMonth === month;
+    isMonthSelected(month) {
+        return this.selectedMonth === month;
     },
 
     createChart(data) {
-        window.inverterChart?.destroy();
+        this.error = null;
+        this.destroyChart();
         window.inverterChart = new Chart(
             document.getElementById(this.elementName),
             {
@@ -55,6 +60,10 @@ export default (initialElementId = 'inverter-chart') => ({
                 data: data
             }
         );
+    },
+
+    destroyChart() {
+        window.inverterChart?.destroy();
     },
 
     createChartFromResponse(response) {
@@ -71,13 +80,25 @@ export default (initialElementId = 'inverter-chart') => ({
         this.createChart(chartData);
     },
 
-    async createMonthlyOutputChartForYear(year) {
-        const response = await this.livewire().getMonthlyOutputForYear(year);
-        this.createChartFromResponse(response);
+    async createMonthlyOutputChartForYear() {
+        const response = await livewire.getMonthlyOutputForYear();
+
+        if (response['dataset_label'] && response['dataset']) {
+            this.createChartFromResponse(response);
+        } else {
+            this.destroyChart();
+            this.error = response['error'] ?? 'Error';
+        }
     },
 
-    async createDailyOutputChartForMonth(year, month) {
-        const response = await this.livewire().getDailyOutputForMonth(year, month);
-        this.createChartFromResponse(response);
+    async createDailyOutputChartForMonth() {
+        const response = await livewire.getDailyOutputForMonth();
+
+        if (response['dataset_label'] && response['dataset']) {
+            this.createChartFromResponse(response);
+        } else {
+            this.destroyChart();
+            this.error = response['error'] ?? 'Error';
+        }
     },
 });
