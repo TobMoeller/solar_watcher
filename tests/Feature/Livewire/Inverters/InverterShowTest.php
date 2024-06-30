@@ -8,6 +8,7 @@ use App\Models\InverterStatus;
 use App\Models\User;
 use App\Services\Breadcrumbs\Breadcrumbs;
 use Illuminate\Database\Eloquent\Factories\Sequence;
+use Illuminate\Support\Collection;
 use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
@@ -206,7 +207,7 @@ test('getMonthlyOutputForYear returns an error message for invalid date', functi
     Livewire::test(InverterShow::class, ['inverter' => $inverter])
         ->set('selectedYear', null)
         ->call('getMonthlyOutputForYear')
-        ->assertReturned(['error' => 'Invalid Date']);
+        ->assertReturned(['status' => '400', 'message' => 'Invalid Date']);
 });
 
 test('getDailyOutputForMonth returns an error message for invalid date', function (?int $selectedYear, ?int $selectedMonth) {
@@ -216,11 +217,100 @@ test('getDailyOutputForMonth returns an error message for invalid date', functio
         ->set('selectedYear', $selectedYear)
         ->set('selectedMonth', $selectedMonth)
         ->call('getDailyOutputForMonth')
-        ->assertReturned(['error' => 'Invalid Date']);
+        ->assertReturned(['status' => '400', 'message' => 'Invalid Date']);
 })->with([
     ['selectedYear' => 2024, 'selectedMonth' => null],
     ['selectedYear' => null, 'selectedMonth' => 2],
 ]);
 
-it('returns monthly output for a year')->todo();
-it('returns daily output for a month')->todo();
+it('returns monthly output for a year', function () {
+    $inverter = Inverter::factory()->create();
+    InverterOutput::factory()
+        ->for($inverter)
+        ->state(new Sequence(
+            [
+                'recorded_at' => '2023-01-01',
+                'timespan' => TimespanUnit::MONTH,
+                'output' => 1111.11,
+            ],
+            [
+                'recorded_at' => '2024-02-01',
+                'timespan' => TimespanUnit::MONTH,
+                'output' => 2222.22,
+            ],
+            [
+                'recorded_at' => '2024-03-01',
+                'timespan' => TimespanUnit::MONTH,
+                'output' => 3333.33,
+            ],
+        ))
+        ->count(3)
+        ->create();
+
+    Livewire::test(InverterShow::class, ['inverter' => $inverter])
+        ->set('selectedYear', 2024)
+        ->call('getMonthlyOutputForYear')
+        ->assertReturned([
+            'status' => '200',
+            'data' => [
+                'labels' => ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                'datasets' => [
+                    [
+                        'label' => 'Output in kWh for 2024',
+                        'data' => ['0', '2222.22', '3333.33', '0', '0', '0', '0', '0', '0', '0', '0', '0']
+                    ],
+                ],
+            ],
+        ]);
+});
+
+it('returns daily output for a month', function () {
+    $inverter = Inverter::factory()->create();
+    InverterOutput::factory()
+        ->for($inverter)
+        ->state(new Sequence(
+            [
+                'recorded_at' => '2023-01-01',
+                'timespan' => TimespanUnit::DAY,
+                'output' => 1111.11,
+            ],
+            [
+                'recorded_at' => '2024-01-02',
+                'timespan' => TimespanUnit::DAY,
+                'output' => 2222.22,
+            ],
+            [
+                'recorded_at' => '2024-01-03',
+                'timespan' => TimespanUnit::DAY,
+                'output' => 3333.33,
+            ],
+        ))
+        ->count(3)
+        ->create();
+
+    $dataset = Collection::make(range(1, 31))->map(fn () => '0')->toArray();
+    $dataset[1] = '2222.22';
+    $dataset[2] = '3333.33';
+
+    Livewire::test(InverterShow::class, ['inverter' => $inverter])
+        ->set('selectedYear', 2024)
+        ->set('selectedMonth', 1)
+        ->call('getDailyOutputForMonth')
+        ->assertReturned([
+            'status' => '200',
+            'data' => [
+                'labels' => range(1, 31),
+                'datasets' => [
+                    [
+                        'label' => 'Output in kWh for January 2024',
+                        'data' => $dataset,
+                    ],
+                ],
+            ],
+        ]);
+});
+
+
+
+
+

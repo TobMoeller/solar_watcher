@@ -67,38 +67,23 @@ export default (
     },
 
     createChartFromResponse(response) {
-        const chartData = {
-            labels: response.dataset.map(row => row.label),
-            datasets: [
-                {
-                    label: response.dataset_label,
-                    data: response.dataset.map(row => row.data)
-                }
-            ]
-        };
-
-        this.createChart(chartData);
+        if (response['status'] === '200' && response['data']) {
+            this.createChart(response['data']);
+        } else {
+            this.destroyChart();
+            this.error = response['message'] ?? 'Error';
+        }
     },
 
     async createMonthlyOutputChartForYear() {
         const response = await livewire.getMonthlyOutputForYear();
 
-        if (response['dataset_label'] && response['dataset']) {
-            this.createChartFromResponse(response);
-        } else {
-            this.destroyChart();
-            this.error = response['error'] ?? 'Error';
-        }
+        this.createChartFromResponse(response);
     },
 
     async createDailyOutputChartForMonth() {
         const response = await livewire.getDailyOutputForMonth();
 
-        if (response['dataset_label'] && response['dataset']) {
-            this.createChartFromResponse(response);
-        } else {
-            this.destroyChart();
-            this.error = response['error'] ?? 'Error';
-        }
+        this.createChartFromResponse(response);
     },
 });

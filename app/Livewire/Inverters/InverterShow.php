@@ -106,9 +106,7 @@ class InverterShow extends Component
     }
 
     /**
-     * @return array<string, string|array<string, string>>
-     *
-     * @throws Throwable
+     * @return array<string, string|array<string, mixed>>
      */
     public function getMonthlyOutputForYear(): array
     {
@@ -116,7 +114,7 @@ class InverterShow extends Component
             $this->selectedYear &&
             $date = Carbon::create($this->selectedYear)
         )) {
-            return ['error' => 'Invalid Date'];
+            return ['status' => '400', 'message' => 'Invalid Date'];
         };
 
         $output = $this->inverter->outputs()
@@ -125,25 +123,24 @@ class InverterShow extends Component
             ->orderBy('recorded_at')
             ->get();
 
-        return [
-            'dataset_label' => __('Output in kWh for :year', ['year' => $this->selectedYear]),
-            'dataset' => Collection::make(range(1, 12))
-                ->map(function (int $month) use ($date, $output): array {
-                    $monthlyOutput = $output->where('recorded_at', $date->setMonth($month)->startOfMonth())->first();
+        $range = Collection::make(range(1, 12));
 
-                    return [
-                        'data' => $monthlyOutput?->output ?? '0',
-                        'label' => $date->locale('EN_en')->monthName,
-                    ];
-                })
-                ->toArray(),
+        return [
+            'status' => '200',
+            'data' => [
+                'labels' => $range->map(fn (int $month) => $date->setMonth($month)->locale('EN_en')->monthName),
+                'datasets' => [
+                    [
+                        'label' => __('Output in kWh for :year', ['year' => $this->selectedYear]),
+                        'data' => $range->map(fn (int $month) => $output->where('recorded_at', $date->setMonth($month)->startOfMonth())->first()?->output ?? '0'),
+                    ],
+                ],
+            ],
         ];
     }
 
     /**
-     * @return array<string, string|array<string, string>>
-     *
-     * @throws Throwable
+     * @return array<string, string|array<string, mixed>>
      */
     public function getDailyOutputForMonth(): array
     {
@@ -152,7 +149,7 @@ class InverterShow extends Component
             $this->selectedMonth &&
             $date = Carbon::create($this->selectedYear, $this->selectedMonth)
         )) {
-            return ['error' => 'Invalid Date'];
+            return ['status' => '400', 'message' => 'Invalid Date'];
         }
 
         $output = $this->inverter->outputs()
@@ -162,20 +159,19 @@ class InverterShow extends Component
             ->orderBy('recorded_at')
             ->get();
 
-        $daysInMonth = $date->daysInMonth();
+        $range = Collection::make(range(1, $date->daysInMonth()));
 
         return [
-            'dataset_label' => __('Output in kWh for :month :year', ['month' => $date->locale('EN_en')->monthName, 'year' => $this->selectedYear]),
-            'dataset' => Collection::make(range(1, $daysInMonth))
-                ->map(function (int $day) use ($date, $output): array {
-                    $monthlyOutput = $output->where('recorded_at', $date->setDay($day))->first();
-
-                    return [
-                        'data' => $monthlyOutput?->output ?? '0',
-                        'label' => $day,
-                    ];
-                })
-                ->toArray(),
+            'status' => '200',
+            'data' => [
+                'labels' => $range,
+                'datasets' => [
+                    [
+                        'label' => __('Output in kWh for :month :year', ['month' => $date->locale('EN_en')->monthName, 'year' => $this->selectedYear]),
+                        'data' => $range->map(fn (int $day) => $output->where('recorded_at', $date->setDay($day))->first()?->output ?? '0'),
+                    ],
+                ]
+            ],
         ];
     }
 }
