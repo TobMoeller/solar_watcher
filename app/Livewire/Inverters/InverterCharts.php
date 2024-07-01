@@ -98,7 +98,7 @@ class InverterCharts extends Component
             ->when(
                 DB::getDefaultConnection() === 'mysql',
                 fn (Builder $query) => $query->selectRaw('DAY(created_at) as day'),
-                fn (Builder $query) => $query->selectRaw('CAST(strftime("%e", created_at) AS INTEGER) as day'),
+                fn (Builder $query) => $query->selectRaw('CAST(strftime("%d", created_at) AS INTEGER) as day'),
             )
             ->whereYear('created_at', $this->selectedYear)
             ->whereMonth('created_at', $this->selectedMonth)
