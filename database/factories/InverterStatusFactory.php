@@ -23,7 +23,7 @@ class InverterStatusFactory extends Factory
             'udc' => $udc = $this->faker->randomFloat(2, 0, 1000),
             'idc' => $idc = $this->faker->randomFloat(2, 0, 20),
             'pdc' => $pdc = round($udc * $idc, 2),
-            'pac' => round($pdc * 0.95, 2)
+            'pac' => round($pdc * 0.95, 2),
         ];
     }
 }

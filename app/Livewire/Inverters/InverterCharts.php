@@ -82,7 +82,7 @@ class InverterCharts extends Component
     #[Computed]
     public function selectableDays(): array
     {
-        if(!(
+        if (! (
             $this->selectedYear &&
             $this->selectedMonth
         )) {
@@ -109,12 +109,12 @@ class InverterCharts extends Component
      */
     public function getMonthlyOutputForYear(): array
     {
-        if (!(
+        if (! (
             $this->selectedYear &&
             $date = Carbon::create($this->selectedYear)
         )) {
             return ['status' => '400', 'message' => 'Invalid Date'];
-        };
+        }
 
         $output = $this->inverter->outputs()
             ->whereYear('recorded_at', $this->selectedYear)
@@ -138,7 +138,7 @@ class InverterCharts extends Component
             ],
             'options' => [
                 'scales' => [
-                    'left-y-axis' =>  [
+                    'left-y-axis' => [
                         'type' => 'linear',
                         'position' => 'left',
                         'title' => [
@@ -158,7 +158,7 @@ class InverterCharts extends Component
      */
     public function getDailyOutputForMonth(): array
     {
-        if(!(
+        if (! (
             $this->selectedYear &&
             $this->selectedMonth &&
             $date = Carbon::create($this->selectedYear, $this->selectedMonth)
@@ -185,11 +185,11 @@ class InverterCharts extends Component
                         'data' => $range->map(fn (int $day) => (string) ($output->where('recorded_at', $date->setDay($day))->first()?->output ?? '0')),
                         'yAxisID' => 'left-y-axis',
                     ],
-                ]
+                ],
             ],
             'options' => [
                 'scales' => [
-                    'left-y-axis' =>  [
+                    'left-y-axis' => [
                         'type' => 'linear',
                         'position' => 'left',
                         'title' => [
@@ -209,7 +209,7 @@ class InverterCharts extends Component
      */
     public function getStatusForDay(): array
     {
-        if(!(
+        if (! (
             $this->selectedYear &&
             $this->selectedMonth &&
             $this->selectedDay &&
@@ -261,7 +261,7 @@ class InverterCharts extends Component
             ],
             'options' => [
                 'scales' => [
-                    'left-y-axis' =>  [
+                    'left-y-axis' => [
                         'type' => 'linear',
                         'position' => 'left',
                         'title' => [
@@ -271,7 +271,7 @@ class InverterCharts extends Component
                             'color' => $pacColor,
                         ],
                     ],
-                    'right-y-axis-1' =>  [
+                    'right-y-axis-1' => [
                         'type' => 'linear',
                         'position' => 'right',
                         'suggestedMax' => $status->max('udc') * 1.5,
@@ -282,7 +282,7 @@ class InverterCharts extends Component
                             'color' => $udcColor,
                         ],
                     ],
-                    'right-y-axis-2' =>  [
+                    'right-y-axis-2' => [
                         'type' => 'linear',
                         'position' => 'right',
                         'suggestedMax' => $status->max('idc') * 3,

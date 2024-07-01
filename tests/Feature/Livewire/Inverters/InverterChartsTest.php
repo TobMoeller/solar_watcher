@@ -162,7 +162,7 @@ it('returns monthly output for a year', function () {
             ],
             'options' => [
                 'scales' => [
-                    'left-y-axis' =>  [
+                    'left-y-axis' => [
                         'type' => 'linear',
                         'position' => 'left',
                         'title' => [
@@ -223,7 +223,7 @@ it('returns daily output for a month', function () {
             ],
             'options' => [
                 'scales' => [
-                    'left-y-axis' =>  [
+                    'left-y-axis' => [
                         'type' => 'linear',
                         'position' => 'left',
                         'title' => [
@@ -298,7 +298,7 @@ it('returns status data for a day', function () {
             ],
             'options' => [
                 'scales' => [
-                    'left-y-axis' =>  [
+                    'left-y-axis' => [
                         'type' => 'linear',
                         'position' => 'left',
                         'title' => [
@@ -308,7 +308,7 @@ it('returns status data for a day', function () {
                             'color' => $pacColor,
                         ],
                     ],
-                    'right-y-axis-1' =>  [
+                    'right-y-axis-1' => [
                         'type' => 'linear',
                         'position' => 'right',
                         'suggestedMax' => $status->max('udc') * 1.5,
@@ -319,7 +319,7 @@ it('returns status data for a day', function () {
                             'color' => $udcColor,
                         ],
                     ],
-                    'right-y-axis-2' =>  [
+                    'right-y-axis-2' => [
                         'type' => 'linear',
                         'position' => 'right',
                         'suggestedMax' => $status->max('idc') * 3,
@@ -334,4 +334,3 @@ it('returns status data for a day', function () {
             ],
         ]);
 });
-

@@ -144,4 +144,3 @@ it('has breadcrumbs', function () {
         ->route->toBe(null)
         ->active->toBeTrue();
 });
-
