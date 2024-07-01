@@ -33,6 +33,8 @@ it('renders inverter list', function (bool $online) {
     Livewire::test(InverterList::class)
         ->assertOk()
         ->assertSee([
+            __('Combined'),
+            route('guests.inverters.show.combined'),
             $online ? __('Online') : __('Offline'),
             '9999.99',
             'UDC',

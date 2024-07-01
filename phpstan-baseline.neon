@@ -11,6 +11,11 @@ parameters:
 			path: app/Actions/Fortify/UpdateUserProfileInformation.php
 
 		-
+			message: "#^Cannot access property \\$id on App\\\\Models\\\\Inverter\\|null\\.$#"
+			count: 4
+			path: app/Livewire/Inverters/InverterCharts.php
+
+		-
 			message: "#^Cannot access property \\$monthName on Illuminate\\\\Support\\\\Carbon\\|string\\.$#"
 			count: 2
 			path: app/Livewire/Inverters/InverterCharts.php

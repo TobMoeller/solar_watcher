@@ -3,7 +3,7 @@
         <h2 class="text-xl font-semibold">
             {{ __('Status') }}
         </h2>
-        <x-inverters.inverter-details :inverter="$this->inverter" class="mt-4" />
+        <x-inverters.inverter-details :inverter="$this->inverter" class="mt-4" wire:poll.300s />
     </section>
     <section class="mt-8">
         <h2 class="text-xl font-semibold mb-4">

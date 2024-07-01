@@ -4,6 +4,7 @@ namespace App\Livewire\Inverters;
 
 use App\Enums\TimespanUnit;
 use App\Models\Inverter;
+use App\Models\InverterOutput;
 use App\Models\InverterStatus;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\View\View;
@@ -16,7 +17,7 @@ use Livewire\Component;
 
 class InverterCharts extends Component
 {
-    public Inverter $inverter;
+    public ?Inverter $inverter = null;
 
     #[Url]
     public ?int $selectedYear = null;
@@ -43,7 +44,8 @@ class InverterCharts extends Component
     #[Computed]
     public function selectableYears(): array
     {
-        return $this->inverter->outputs()
+        return InverterOutput::query()
+            ->when($this->inverter, fn (Builder $query) => $query->where('inverter_id', $this->inverter->id))
             ->when(
                 DB::getDefaultConnection() === 'mysql',
                 fn (Builder $query) => $query->selectRaw('YEAR(recorded_at) as year'),
@@ -62,7 +64,8 @@ class InverterCharts extends Component
     #[Computed]
     public function selectableMonths(): array
     {
-        return $this->inverter->outputs()
+        return InverterOutput::query()
+            ->when($this->inverter, fn (Builder $query) => $query->where('inverter_id', $this->inverter->id))
             ->when(
                 DB::getDefaultConnection() === 'mysql',
                 fn (Builder $query) => $query->selectRaw('MONTH(recorded_at) as month'),
@@ -83,6 +86,7 @@ class InverterCharts extends Component
     public function selectableDays(): array
     {
         if (! (
+            $this->inverter &&
             $this->selectedYear &&
             $this->selectedMonth
         )) {
@@ -116,7 +120,12 @@ class InverterCharts extends Component
             return ['status' => '400', 'message' => 'Invalid Date'];
         }
 
-        $output = $this->inverter->outputs()
+        $output = InverterOutput::query()
+            ->when(
+                $this->inverter,
+                fn (Builder $query) => $query->select('output', 'recorded_at')->where('inverter_id', $this->inverter->id),
+                fn (Builder $query) => $query->selectRaw('SUM(output) as output, recorded_at')->groupBy('recorded_at')
+            )
             ->whereYear('recorded_at', $this->selectedYear)
             ->where('timespan', TimespanUnit::MONTH)
             ->orderBy('recorded_at')
@@ -166,7 +175,12 @@ class InverterCharts extends Component
             return ['status' => '400', 'message' => 'Invalid Date'];
         }
 
-        $output = $this->inverter->outputs()
+        $output = InverterOutput::query()
+            ->when(
+                $this->inverter,
+                fn (Builder $query) => $query->select('output', 'recorded_at')->where('inverter_id', $this->inverter->id),
+                fn (Builder $query) => $query->selectRaw('SUM(output) as output, recorded_at')->groupBy('recorded_at')
+            )
             ->whereYear('recorded_at', $this->selectedYear)
             ->whereMonth('recorded_at', $this->selectedMonth)
             ->where('timespan', TimespanUnit::DAY)
@@ -209,6 +223,10 @@ class InverterCharts extends Component
      */
     public function getStatusForDay(): array
     {
+        if (empty($this->inverter)) {
+            return ['status' => '400', 'message' => 'Missing Inverter'];
+        }
+
         if (! (
             $this->selectedYear &&
             $this->selectedMonth &&
