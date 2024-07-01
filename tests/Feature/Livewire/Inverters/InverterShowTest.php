@@ -201,6 +201,26 @@ it('returns selectable months', function () {
         ->toBe([2, 3]);
 });
 
+it('returns selectable days', function () {
+    $inverter = Inverter::factory()->create();
+    InverterStatus::factory()
+        ->for($inverter)
+        ->state(new Sequence(
+            ['created_at' => '2024-01-01 12:00'],
+            ['created_at' => '2024-01-02 12:00'],
+            ['created_at' => '2024-02-03 12:00'],
+        ))
+        ->count(3)
+        ->create();
+
+    $livewire = Livewire::test(InverterShow::class, ['inverter' => $inverter])
+        ->set('selectedYear', 2024)
+        ->set('selectedMonth', 1);
+
+    expect($livewire->get('selectableDays'))
+        ->toBe([1, 2]);
+});
+
 test('getMonthlyOutputForYear returns an error message for invalid date', function () {
     $inverter = Inverter::factory()->create();
 
@@ -221,6 +241,21 @@ test('getDailyOutputForMonth returns an error message for invalid date', functio
 })->with([
     ['selectedYear' => 2024, 'selectedMonth' => null],
     ['selectedYear' => null, 'selectedMonth' => 2],
+]);
+
+test('getStatusForDay returns an error message for invalid date', function (?int $selectedYear, ?int $selectedMonth, ?int $selectedDay) {
+    $inverter = Inverter::factory()->create();
+
+    Livewire::test(InverterShow::class, ['inverter' => $inverter])
+        ->set('selectedYear', $selectedYear)
+        ->set('selectedMonth', $selectedMonth)
+        ->set('selectedDay', $selectedDay)
+        ->call('getStatusForDay')
+        ->assertReturned(['status' => '400', 'message' => 'Invalid Date']);
+})->with([
+    ['selectedYear' => null, 'selectedMonth' => 1, 'selectedDay' => 1],
+    ['selectedYear' => 2024, 'selectedMonth' => null, 'selectedDay' => 1],
+    ['selectedYear' => 2024, 'selectedMonth' => 1, 'selectedDay' => null],
 ]);
 
 it('returns monthly output for a year', function () {
@@ -257,7 +292,22 @@ it('returns monthly output for a year', function () {
                 'datasets' => [
                     [
                         'label' => 'Output in kWh for 2024',
-                        'data' => ['0', '2222.22', '3333.33', '0', '0', '0', '0', '0', '0', '0', '0', '0']
+                        'data' => ['0', '2222.22', '3333.33', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+                        'yAxisID' => 'left-y-axis',
+                    ],
+                ],
+            ],
+            'options' => [
+                'scales' => [
+                    'left-y-axis' =>  [
+                        'type' => 'linear',
+                        'position' => 'left',
+                        'title' => [
+                            'display' => true,
+                            'text' => __('kWh'),
+                            'align' => 'end',
+                            'color' => '#eab308',
+                        ],
                     ],
                 ],
             ],
@@ -304,11 +354,126 @@ it('returns daily output for a month', function () {
                     [
                         'label' => 'Output in kWh for January 2024',
                         'data' => $dataset,
+                        'yAxisID' => 'left-y-axis',
+                    ],
+                ],
+            ],
+            'options' => [
+                'scales' => [
+                    'left-y-axis' =>  [
+                        'type' => 'linear',
+                        'position' => 'left',
+                        'title' => [
+                            'display' => true,
+                            'text' => __('kWh'),
+                            'align' => 'end',
+                            'color' => '#eab308',
+                        ],
                     ],
                 ],
             ],
         ]);
 });
+
+it('returns status data for a day', function () {
+    $inverter = Inverter::factory()->create();
+    $status = InverterStatus::factory()
+        ->for($inverter)
+        ->state([
+            'udc' => 1111.11,
+            'idc' => 2222.22,
+            'pac' => 3333.33,
+            'pdc' => 4444.44,
+        ])
+        ->state(new Sequence(
+            ['created_at' => '2024-01-01 12:00'],
+            ['created_at' => '2024-01-01 12:05'],
+            ['created_at' => '2024-01-01 12:10'],
+        ))
+        ->count(3)
+        ->create();
+
+    Livewire::test(InverterShow::class, ['inverter' => $inverter])
+        ->set('selectedYear', 2024)
+        ->set('selectedMonth', 1)
+        ->set('selectedDay', 1)
+        ->call('getStatusForDay')
+        ->assertReturned([
+            'status' => '200',
+            'data' => [
+                'labels' => ['12:00', '12:05', '12:10'],
+                'datasets' => [
+                    [
+                        'label' => __('UDC in V'),
+                        'data' => ['1111.11', '1111.11', '1111.11'],
+                        'borderColor' => $udcColor = '#60a5fa',
+                        'backgroundColor' => $udcColor.($transparency = '30'),
+                        'yAxisID' => 'right-y-axis-1',
+                    ],
+                    [
+                        'label' => __('IDC in A'),
+                        'data' => ['2222.22', '2222.22', '2222.22'],
+                        'borderColor' => $idcColor = '#f87171',
+                        'backgroundColor' => $idcColor.$transparency,
+                        'yAxisID' => 'right-y-axis-2',
+                    ],
+                    [
+                        'label' => __('PAC in W'),
+                        'data' => ['3333.33', '3333.33', '3333.33'],
+                        'borderColor' => $pacColor = '#eab308',
+                        'backgroundColor' => $pacColor.$transparency,
+                        'yAxisID' => 'left-y-axis',
+                    ],
+                    [
+                        'label' => __('PDC in W'),
+                        'data' => ['4444.44', '4444.44', '4444.44'],
+                        'borderColor' => $pdcColor = '#ca8a04',
+                        'backgroundColor' => $pdcColor.$transparency,
+                        'yAxisID' => 'left-y-axis',
+                    ],
+                ],
+            ],
+            'options' => [
+                'scales' => [
+                    'left-y-axis' =>  [
+                        'type' => 'linear',
+                        'position' => 'left',
+                        'title' => [
+                            'display' => true,
+                            'text' => __('Watt'),
+                            'align' => 'end',
+                            'color' => $pacColor,
+                        ],
+                    ],
+                    'right-y-axis-1' =>  [
+                        'type' => 'linear',
+                        'position' => 'right',
+                        'suggestedMax' => $status->max('udc') * 1.5,
+                        'title' => [
+                            'display' => true,
+                            'text' => __('Volt'),
+                            'align' => 'end',
+                            'color' => $udcColor,
+                        ],
+                    ],
+                    'right-y-axis-2' =>  [
+                        'type' => 'linear',
+                        'position' => 'right',
+                        'suggestedMax' => $status->max('idc') * 3,
+                        'title' => [
+                            'display' => true,
+                            'text' => __('Ampere'),
+                            'align' => 'end',
+                            'color' => $idcColor,
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+});
+
+
+
 
 
 

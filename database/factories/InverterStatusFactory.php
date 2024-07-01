@@ -20,10 +20,10 @@ class InverterStatusFactory extends Factory
         return [
             'inverter_id' => Inverter::factory(),
             'is_online' => $this->faker->boolean(),
-            'udc' => $this->faker->randomFloat(2, 0, 30_000),
-            'idc' => $this->faker->randomFloat(2, 0, 30_000),
-            'pac' => $this->faker->randomFloat(2, 0, 30_000),
-            'pdc' => $this->faker->randomFloat(2, 0, 30_000),
+            'udc' => $udc = $this->faker->randomFloat(2, 0, 1000),
+            'idc' => $idc = $this->faker->randomFloat(2, 0, 20),
+            'pdc' => $pdc = round($udc * $idc, 2),
+            'pac' => round($pdc * 0.95, 2)
         ];
     }
 }

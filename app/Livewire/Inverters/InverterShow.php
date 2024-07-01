@@ -4,6 +4,7 @@ namespace App\Livewire\Inverters;
 
 use App\Enums\TimespanUnit;
 use App\Models\Inverter;
+use App\Models\InverterStatus;
 use App\Services\Breadcrumbs\Breadcrumb;
 use App\Services\Breadcrumbs\Breadcrumbs;
 use Illuminate\Contracts\Database\Eloquent\Builder;
@@ -15,7 +16,6 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
 use Livewire\Component;
-use Throwable;
 
 class InverterShow extends Component
 {
@@ -26,6 +26,9 @@ class InverterShow extends Component
 
     #[Url]
     public ?int $selectedMonth = null;
+
+    #[Url]
+    public ?int $selectedDay = null;
 
     public function render(): View
     {
@@ -106,6 +109,34 @@ class InverterShow extends Component
     }
 
     /**
+     * @return array<int, string>
+     */
+    #[Computed]
+    public function selectableDays(): array
+    {
+        if(!(
+            $this->selectedYear &&
+            $this->selectedMonth
+        )) {
+            return [];
+        }
+
+        return InverterStatus::query()
+            ->where('inverter_id', $this->inverter->id)
+            ->when(
+                DB::getDefaultConnection() === 'mysql',
+                fn (Builder $query) => $query->selectRaw('DAY(created_at) as day'),
+                fn (Builder $query) => $query->selectRaw('CAST(strftime("%e", created_at) AS INTEGER) as day'),
+            )
+            ->whereYear('created_at', $this->selectedYear)
+            ->whereMonth('created_at', $this->selectedMonth)
+            ->groupBy('day')
+            ->orderBy('day')
+            ->pluck('day')
+            ->toArray();
+    }
+
+    /**
      * @return array<string, string|array<string, mixed>>
      */
     public function getMonthlyOutputForYear(): array
@@ -132,7 +163,22 @@ class InverterShow extends Component
                 'datasets' => [
                     [
                         'label' => __('Output in kWh for :year', ['year' => $this->selectedYear]),
-                        'data' => $range->map(fn (int $month) => $output->where('recorded_at', $date->setMonth($month)->startOfMonth())->first()?->output ?? '0'),
+                        'data' => $range->map(fn (int $month) => (string) ($output->where('recorded_at', $date->setMonth($month)->startOfMonth())->first()?->output ?? '0')),
+                        'yAxisID' => 'left-y-axis',
+                    ],
+                ],
+            ],
+            'options' => [
+                'scales' => [
+                    'left-y-axis' =>  [
+                        'type' => 'linear',
+                        'position' => 'left',
+                        'title' => [
+                            'display' => true,
+                            'text' => __('kWh'),
+                            'align' => 'end',
+                            'color' => '#eab308',
+                        ],
                     ],
                 ],
             ],
@@ -168,9 +214,118 @@ class InverterShow extends Component
                 'datasets' => [
                     [
                         'label' => __('Output in kWh for :month :year', ['month' => $date->locale('EN_en')->monthName, 'year' => $this->selectedYear]),
-                        'data' => $range->map(fn (int $day) => $output->where('recorded_at', $date->setDay($day))->first()?->output ?? '0'),
+                        'data' => $range->map(fn (int $day) => (string) ($output->where('recorded_at', $date->setDay($day))->first()?->output ?? '0')),
+                        'yAxisID' => 'left-y-axis',
                     ],
                 ]
+            ],
+            'options' => [
+                'scales' => [
+                    'left-y-axis' =>  [
+                        'type' => 'linear',
+                        'position' => 'left',
+                        'title' => [
+                            'display' => true,
+                            'text' => __('kWh'),
+                            'align' => 'end',
+                            'color' => '#eab308',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, string|array<string, mixed>>
+     */
+    public function getStatusForDay(): array
+    {
+        if(!(
+            $this->selectedYear &&
+            $this->selectedMonth &&
+            $this->selectedDay &&
+            $date = Carbon::create($this->selectedYear, $this->selectedMonth, $this->selectedDay)
+        )) {
+            return ['status' => '400', 'message' => 'Invalid Date'];
+        }
+
+        $status = InverterStatus::query()
+            ->where('inverter_id', $this->inverter->id)
+            ->whereDate('created_at', $date)
+            ->orderBy('created_at')
+            ->get();
+
+        return [
+            'status' => '200',
+            'data' => [
+                'labels' => $status->map(fn (InverterStatus $inverterStatus) => $inverterStatus->created_at?->format('H:i')),
+                'datasets' => [
+                    [
+                        'label' => __('UDC in V'),
+                        'data' => $status->map(fn (InverterStatus $inverterStatus) => (string) ($inverterStatus->udc ?? '0')),
+                        'borderColor' => $udcColor = '#60a5fa',
+                        'backgroundColor' => $udcColor.($transparency = '30'),
+                        'yAxisID' => 'right-y-axis-1',
+                    ],
+                    [
+                        'label' => __('IDC in A'),
+                        'data' => $status->map(fn (InverterStatus $inverterStatus) => (string) ($inverterStatus->idc ?? '0')),
+                        'borderColor' => $idcColor = '#f87171',
+                        'backgroundColor' => $idcColor.$transparency,
+                        'yAxisID' => 'right-y-axis-2',
+                    ],
+                    [
+                        'label' => __('PAC in W'),
+                        'data' => $status->map(fn (InverterStatus $inverterStatus) => (string) ($inverterStatus->pac ?? '0')),
+                        'borderColor' => $pacColor = '#eab308',
+                        'backgroundColor' => $pacColor.$transparency,
+                        'yAxisID' => 'left-y-axis',
+                    ],
+                    [
+                        'label' => __('PDC in W'),
+                        'data' => $status->map(fn (InverterStatus $inverterStatus) => (string) ($inverterStatus->pdc ?? '0')),
+                        'borderColor' => $pdcColor = '#ca8a04',
+                        'backgroundColor' => $pdcColor.$transparency,
+                        'yAxisID' => 'left-y-axis',
+                    ],
+                ],
+            ],
+            'options' => [
+                'scales' => [
+                    'left-y-axis' =>  [
+                        'type' => 'linear',
+                        'position' => 'left',
+                        'title' => [
+                            'display' => true,
+                            'text' => __('Watt'),
+                            'align' => 'end',
+                            'color' => $pacColor,
+                        ],
+                    ],
+                    'right-y-axis-1' =>  [
+                        'type' => 'linear',
+                        'position' => 'right',
+                        'suggestedMax' => $status->max('udc') * 1.5,
+                        'title' => [
+                            'display' => true,
+                            'text' => __('Volt'),
+                            'align' => 'end',
+                            'color' => $udcColor,
+                        ],
+                    ],
+                    'right-y-axis-2' =>  [
+                        'type' => 'linear',
+                        'position' => 'right',
+                        'suggestedMax' => $status->max('idc') * 3,
+                        'title' => [
+                            'display' => true,
+                            'text' => __('Ampere'),
+                            'align' => 'end',
+                            'color' => $idcColor,
+                        ],
+                    ],
+                ],
             ],
         ];
     }

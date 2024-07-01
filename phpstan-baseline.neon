@@ -16,12 +16,17 @@ parameters:
 			path: app/Livewire/Inverters/InverterShow.php
 
 		-
-			message: "#^Method App\\\\Livewire\\\\Inverters\\\\InverterShow\\:\\:getMonths\\(\\) should return array\\<int, string\\> but returns array\\.$#"
+			message: "#^Method App\\\\Livewire\\\\Inverters\\\\InverterShow\\:\\:selectableDays\\(\\) should return array\\<int, string\\> but returns array\\.$#"
 			count: 1
 			path: app/Livewire/Inverters/InverterShow.php
 
 		-
-			message: "#^Method App\\\\Livewire\\\\Inverters\\\\InverterShow\\:\\:getYears\\(\\) should return array\\<int, string\\> but returns array\\.$#"
+			message: "#^Method App\\\\Livewire\\\\Inverters\\\\InverterShow\\:\\:selectableMonths\\(\\) should return array\\<int, string\\> but returns array\\.$#"
+			count: 1
+			path: app/Livewire/Inverters/InverterShow.php
+
+		-
+			message: "#^Method App\\\\Livewire\\\\Inverters\\\\InverterShow\\:\\:selectableYears\\(\\) should return array\\<int, string\\> but returns array\\.$#"
 			count: 1
 			path: app/Livewire/Inverters/InverterShow.php
 

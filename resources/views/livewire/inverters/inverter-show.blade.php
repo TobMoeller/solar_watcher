@@ -27,6 +27,17 @@
                     @endforeach
                 </ul>
             @endif
+            @if($days = $this->selectableDays)
+                <ul class="flex flex-row gap-2 flex-wrap">
+                    @foreach($days as $day)
+                        <li>
+                            <button @click="setDay(@js($day))" :class="isDaySelected(@js($day)) ? 'text-white' : 'text-gray-400'">
+                                {{ $day }}
+                            </button>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
         </div>
         <div x-show="error !== null" x-text="error" class="mt-4 text-red-400"></div>
         <div x-show="error === null" class="relative w-full lg:w-2/3 mt-4">

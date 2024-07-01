@@ -12,18 +12,27 @@ export default (
         elements: {
             bar: {
                 backgroundColor: '#eab308'
+            },
+            line: {
+                fill: true
+            },
+            point: {
+                pointStyle: false
             }
         }
     },
     selectedYear: livewire.entangle('selectedYear'),
     selectedMonth: livewire.entangle('selectedMonth'),
+    selectedDay: livewire.entangle('selectedDay'),
     error: null,
 
     init() {
         Chart.defaults.borderColor = '#9ca3af20';
         Chart.defaults.color = '#9ca3af';
 
-        if (this.selectedYear && this.selectedMonth) {
+        if (this.selectedYear && this.selectedMonth && this.selectedDay) {
+            this.createStatusChartForDay();
+        } else if (this.selectedYear && this.selectedMonth) {
             this.createDailyOutputChartForMonth();
         } else if (this.selectedYear) {
             this.createMonthlyOutputChartForYear();
@@ -33,6 +42,7 @@ export default (
     setYear(year) {
         this.selectedYear = year;
         this.selectedMonth = null;
+        this.selectedDay = null;
         this.createMonthlyOutputChartForYear();
     },
 
@@ -42,6 +52,7 @@ export default (
 
     setMonth(month) {
         this.selectedMonth = month;
+        this.selectedDay = null;
         this.createDailyOutputChartForMonth();
     },
 
@@ -49,14 +60,21 @@ export default (
         return this.selectedMonth === month;
     },
 
-    createChart(data) {
-        this.error = null;
-        this.destroyChart();
+    setDay(day) {
+        this.selectedDay = day;
+        this.createStatusChartForDay();
+    },
+
+    isDaySelected(day) {
+        return this.selectedDay === day;
+    },
+
+    createChart(type, options, data) {
         window.inverterChart = new Chart(
             document.getElementById(this.elementName),
             {
-                type: 'bar',
-                options: this.defaultOptions,
+                type: type,
+                options: { ...options, ...this.defaultOptions },
                 data: data
             }
         );
@@ -66,9 +84,11 @@ export default (
         window.inverterChart?.destroy();
     },
 
-    createChartFromResponse(response) {
+    createChartFromResponse(response, type = 'bar', options = null) {
         if (response['status'] === '200' && response['data']) {
-            this.createChart(response['data']);
+            this.error = null;
+            this.destroyChart();
+            this.createChart(type, response['options'] ?? null, response['data']);
         } else {
             this.destroyChart();
             this.error = response['message'] ?? 'Error';
@@ -85,5 +105,11 @@ export default (
         const response = await livewire.getDailyOutputForMonth();
 
         this.createChartFromResponse(response);
+    },
+
+    async createStatusChartForDay() {
+        const response = await livewire.getStatusForDay();
+
+        this.createChartFromResponse(response, 'line');
     },
 });
