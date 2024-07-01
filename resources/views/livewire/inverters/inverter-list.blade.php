@@ -2,8 +2,15 @@
     <x-welcome />
     <div>
         <ul class="grid grid-cols-2" wire:poll.300s>
+            <li class="lg:p-4 p-2 text-white border-b border-gray-700 hover:bg-gray-700 col-span-2">
+                <a href="{{ route('guests.inverters.show.combined') }}">
+                    <h2 class="text-lg font-semibold text-center">
+                        {{ __('Combined') }}
+                    </h2>
+                </a>
+            </li>
             @foreach ($this->inverters as $inverter)
-                <li class="lg:p-8 p-2 text-white border-b odd:border-r border-gray-700 hover:bg-gray-700">
+                <li class="lg:p-8 p-2 text-white border-b sm:even:border-r border-gray-700 hover:bg-gray-700 col-span-2 sm:col-span-1">
                     <a href="{{ route('guests.inverters.show', ['inverter' => $inverter]) }}">
                         <h2 class="text-lg font-semibold">
                             {{ $inverter->name }}
@@ -60,10 +67,11 @@
                                 </svg>
                             </div>
                             <div class="grid grid-cols-2 w-full">
-                                @foreach(['udc', 'idc', 'pac', 'pdc'] as $attribute)
+                                @foreach(['udc' => 'V', 'idc' => 'A', 'pac' => 'W', 'pdc' => 'W'] as $attribute => $unit)
                                     <div class="flex md:flex-row flex-col md:gap-2">
                                         <span class="text-gray-400">{{ Str::upper($attribute) }}:</span>
                                         <span>{{ $status->$attribute ?? '0' }}</span>
+                                        <span class="text-gray-400 hidden md:block">{{ $unit }}</span>
                                     </div>
                                 @endforeach
                             </div>

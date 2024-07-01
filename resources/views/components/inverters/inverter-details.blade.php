@@ -69,10 +69,11 @@
                     </svg>
                 </div>
                 <div class="flex flex-col">
-                    @foreach(['udc', 'idc', 'pac', 'pdc'] as $attribute)
+                    @foreach(['udc' => 'V', 'idc' => 'A', 'pac' => 'W', 'pdc' => 'W'] as $attribute => $unit)
                         <div class="flex flex-row gap-2">
                             <span class="text-gray-400">{{ Str::upper($attribute) }}:</span>
                             <span>{{ $status->$attribute ?? '0' }}</span>
+                            <span class="text-gray-400">{{ $unit }}</span>
                         </div>
                     @endforeach
                 </div>
