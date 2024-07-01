@@ -13,22 +13,22 @@ parameters:
 		-
 			message: "#^Cannot access property \\$monthName on Illuminate\\\\Support\\\\Carbon\\|string\\.$#"
 			count: 2
-			path: app/Livewire/Inverters/InverterShow.php
+			path: app/Livewire/Inverters/InverterCharts.php
 
 		-
-			message: "#^Method App\\\\Livewire\\\\Inverters\\\\InverterShow\\:\\:selectableDays\\(\\) should return array\\<int, string\\> but returns array\\.$#"
+			message: "#^Method App\\\\Livewire\\\\Inverters\\\\InverterCharts\\:\\:selectableDays\\(\\) should return array\\<int, string\\> but returns array\\.$#"
 			count: 1
-			path: app/Livewire/Inverters/InverterShow.php
+			path: app/Livewire/Inverters/InverterCharts.php
 
 		-
-			message: "#^Method App\\\\Livewire\\\\Inverters\\\\InverterShow\\:\\:selectableMonths\\(\\) should return array\\<int, string\\> but returns array\\.$#"
+			message: "#^Method App\\\\Livewire\\\\Inverters\\\\InverterCharts\\:\\:selectableMonths\\(\\) should return array\\<int, string\\> but returns array\\.$#"
 			count: 1
-			path: app/Livewire/Inverters/InverterShow.php
+			path: app/Livewire/Inverters/InverterCharts.php
 
 		-
-			message: "#^Method App\\\\Livewire\\\\Inverters\\\\InverterShow\\:\\:selectableYears\\(\\) should return array\\<int, string\\> but returns array\\.$#"
+			message: "#^Method App\\\\Livewire\\\\Inverters\\\\InverterCharts\\:\\:selectableYears\\(\\) should return array\\<int, string\\> but returns array\\.$#"
 			count: 1
-			path: app/Livewire/Inverters/InverterShow.php
+			path: app/Livewire/Inverters/InverterCharts.php
 
 		-
 			message: "#^Parameter \\#1 \\$value of static method Illuminate\\\\Support\\\\Str\\:\\:lower\\(\\) expects string, mixed given\\.$#"

@@ -2,7 +2,7 @@ import { Chart } from "chart.js/auto";
 import { Livewire } from "../../vendor/livewire/livewire/dist/livewire.esm";
 
 export default (
-    livewire = Livewire.getByName('inverters.inverter-show')[0],
+    livewire = Livewire.getByName('inverters.inverter-charts')[0],
     initialElementId = 'inverter-chart'
 ) => ({
     elementName: initialElementId,
