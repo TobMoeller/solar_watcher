@@ -6,6 +6,7 @@ use App\Models\Inverter;
 use App\Models\InverterOutput;
 use App\Models\InverterStatus;
 use Illuminate\Database\Eloquent\Factories\Sequence;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Livewire\Livewire;
 
@@ -69,9 +70,9 @@ it('returns selectable days', function (bool $withInverter) {
     InverterStatus::factory()
         ->for($inverter)
         ->state(new Sequence(
-            ['created_at' => '2024-01-01 12:00'],
-            ['created_at' => '2024-01-02 12:00'],
-            ['created_at' => '2024-02-03 12:00'],
+            ['created_at' => Carbon::create(2024, 1, 1, 12)],
+            ['created_at' => Carbon::create(2024, 1, 2, 12)],
+            ['created_at' => Carbon::create(2024, 2, 3, 12)],
         ))
         ->count(3)
         ->create();
