@@ -35,7 +35,7 @@ class Inverter extends Model
      */
     public function latestStatus(): HasOne
     {
-        return $this->statuses()->one()->ofMany('created_at', 'max');
+        return $this->statuses()->one()->ofMany('recorded_at', 'max');
     }
 
     /**
@@ -44,7 +44,7 @@ class Inverter extends Model
     public function isOnline(): Attribute
     {
         return new Attribute(
-            get: fn (): bool => $this->latestStatus?->is_online && $this->latestStatus->created_at?->greaterThanOrEqualTo(now()->subMinutes(30)),
+            get: fn (): bool => $this->latestStatus?->is_online && $this->latestStatus->recorded_at?->greaterThanOrEqualTo(now()->subMinutes(30)),
         );
     }
 }
