@@ -41,4 +41,3 @@ it('has is_online trait', function (bool $isOnline) {
 
     Carbon::setTestNow();
 })->with([true, false]);
-

@@ -44,7 +44,7 @@ class Inverter extends Model
     public function isOnline(): Attribute
     {
         return new Attribute(
-            get: fn (): bool => $this->latestStatus?->is_online && $this->latestStatus->recorded_at?->greaterThanOrEqualTo(now()->subMinutes(30)),
+            get: fn (): bool => $this->latestStatus?->is_online && $this->latestStatus->recorded_at->greaterThanOrEqualTo(now()->subMinutes(30)),
         );
     }
 }
