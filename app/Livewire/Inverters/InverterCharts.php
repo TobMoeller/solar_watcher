@@ -97,11 +97,11 @@ class InverterCharts extends Component
             ->where('inverter_id', $this->inverter->id)
             ->when(
                 DB::getDefaultConnection() === 'mysql',
-                fn (Builder $query) => $query->selectRaw('DAY(created_at) as day'),
-                fn (Builder $query) => $query->selectRaw('CAST(strftime("%d", created_at) AS INTEGER) as day'),
+                fn (Builder $query) => $query->selectRaw('DAY(recorded_at) as day'),
+                fn (Builder $query) => $query->selectRaw('CAST(strftime("%d", recorded_at) AS INTEGER) as day'),
             )
-            ->whereYear('created_at', $this->selectedYear)
-            ->whereMonth('created_at', $this->selectedMonth)
+            ->whereYear('recorded_at', $this->selectedYear)
+            ->whereMonth('recorded_at', $this->selectedMonth)
             ->groupBy('day')
             ->orderBy('day')
             ->pluck('day')
@@ -238,14 +238,14 @@ class InverterCharts extends Component
 
         $status = InverterStatus::query()
             ->where('inverter_id', $this->inverter->id)
-            ->whereDate('created_at', $date)
-            ->orderBy('created_at')
+            ->whereDate('recorded_at', $date)
+            ->orderBy('recorded_at')
             ->get();
 
         return [
             'status' => '200',
             'data' => [
-                'labels' => $status->map(fn (InverterStatus $inverterStatus) => $inverterStatus->created_at?->format('H:i')),
+                'labels' => $status->map(fn (InverterStatus $inverterStatus) => $inverterStatus->recorded_at->format('H:i')),
                 'datasets' => [
                     [
                         'label' => __('UDC in V'),

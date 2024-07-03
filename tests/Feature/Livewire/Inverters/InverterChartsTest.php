@@ -70,9 +70,9 @@ it('returns selectable days', function (bool $withInverter) {
     InverterStatus::factory()
         ->for($inverter)
         ->state(new Sequence(
-            ['created_at' => Carbon::create(2024, 1, 1, 12)],
-            ['created_at' => Carbon::create(2024, 1, 2, 12)],
-            ['created_at' => Carbon::create(2024, 2, 3, 12)],
+            ['recorded_at' => Carbon::create(2024, 1, 1, 12)],
+            ['recorded_at' => Carbon::create(2024, 1, 2, 12)],
+            ['recorded_at' => Carbon::create(2024, 2, 3, 12)],
         ))
         ->count(3)
         ->create();
@@ -256,9 +256,9 @@ it('returns status data for a day', function () {
             'pdc' => 4444.44,
         ])
         ->state(new Sequence(
-            ['created_at' => '2024-01-01 12:00'],
-            ['created_at' => '2024-01-01 12:05'],
-            ['created_at' => '2024-01-01 12:10'],
+            ['recorded_at' => '2024-01-01 12:00'],
+            ['recorded_at' => '2024-01-01 12:05'],
+            ['recorded_at' => '2024-01-01 12:10'],
         ))
         ->count(3)
         ->create();
