@@ -75,6 +75,7 @@ class InverterSeeder extends Seeder
             ->state(new Sequence(function (Sequence $sequence) {
                 return [
                     'created_at' => $date = now()->subMinutes($sequence->index * 5),
+                    'recorded_at' => $date = now()->subMinutes($sequence->index * 5),
                     'updated_at' => $date,
                 ];
             }))

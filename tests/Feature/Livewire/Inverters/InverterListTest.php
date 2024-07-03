@@ -15,6 +15,7 @@ it('renders inverter list', function (bool $online) {
         ->for($inverter)
         ->state([
             'is_online' => $online,
+            'recorded_at' => now(),
             'udc' => 1111.11,
             'idc' => 2222.22,
             'pac' => 3333.33,
