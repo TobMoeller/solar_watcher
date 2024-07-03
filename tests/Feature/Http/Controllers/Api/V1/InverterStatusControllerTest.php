@@ -2,6 +2,7 @@
 
 use App\Models\InverterStatus;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Laravel\Sanctum\Sanctum;
 
 use function Pest\Laravel\assertDatabaseHas;
@@ -63,13 +64,15 @@ it('stores an inverter status', function (bool $negative) {
         ->state([
             'idc' => fake()->randomFloat(2, $negative ? -10 : 0, $negative ? 0 : 30_000),
         ])
-        ->make();
+        ->make()
+        ->toArray();
 
-    postJson(route('api.v1.inverter-status.store'), $inverterStatus->toArray())
+    postJson(route('api.v1.inverter-status.store'), $inverterStatus)
         ->assertCreated()
-        ->assertJson(['data' => $inverterStatus->toArray()]);
+        ->assertJson(['data' => $inverterStatus]);
 
-    assertDatabaseHas('inverter_statuses', $inverterStatus->toArray());
+    $inverterStatus['recorded_at'] = Carbon::make($inverterStatus['recorded_at'])->toDateTimeString();
+    assertDatabaseHas('inverter_statuses', $inverterStatus);
 })->with(['negative idc' => true, 'positive idc' => false]);
 
 it('stores an inverter status without output data', function () {
@@ -82,13 +85,15 @@ it('stores an inverter status without output data', function () {
             'pac' => null,
             'pdc' => null,
         ])
-        ->make();
+        ->make()
+        ->toArray();
 
-    postJson(route('api.v1.inverter-status.store'), $inverterStatus->toArray())
+    postJson(route('api.v1.inverter-status.store'), $inverterStatus)
         ->assertCreated()
-        ->assertJson(['data' => $inverterStatus->toArray()]);
+        ->assertJson(['data' => $inverterStatus]);
 
-    assertDatabaseHas('inverter_statuses', $inverterStatus->toArray());
+    $inverterStatus['recorded_at'] = Carbon::make($inverterStatus['recorded_at'])->toDateTimeString();
+    assertDatabaseHas('inverter_statuses', $inverterStatus);
 });
 
 it('updates an inverter status', function (bool $negative) {

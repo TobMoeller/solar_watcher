@@ -12,6 +12,7 @@ class InverterStatus extends Model
 
     public $casts = [
         'is_online' => 'boolean',
+        'recorded_at' => 'datetime',
     ];
 
     public $guarded = [];
