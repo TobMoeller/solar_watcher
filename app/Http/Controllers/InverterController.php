@@ -27,33 +27,33 @@ class InverterController extends Controller
         ]);
     }
 
-    protected function outputDay(): ?float
+    protected function outputDay(): ?string
     {
         $output = InverterOutput::query()
             ->where('timespan', TimespanUnit::DAY)
             ->whereDate('recorded_at', now())
             ->sum('output');
 
-        return is_float($output) ? $output : null;
+        return is_numeric($output) ? (string) $output : null;
     }
 
-    protected function outputMonth(): ?float
+    protected function outputMonth(): ?string
     {
         $output = InverterOutput::query()
             ->where('timespan', TimespanUnit::MONTH)
             ->whereDate('recorded_at', now()->startOfMonth())
             ->sum('output');
 
-        return is_float($output) ? $output : null;
+        return is_numeric($output) ? (string) $output : null;
     }
 
-    protected function outputYear(): ?float
+    protected function outputYear(): ?string
     {
         $output = InverterOutput::query()
             ->where('timespan', TimespanUnit::YEAR)
             ->whereDate('recorded_at', now()->startOfYear())
             ->sum('output');
 
-        return is_float($output) ? $output : null;
+        return is_numeric($output) ? (string) $output : null;
     }
 }
