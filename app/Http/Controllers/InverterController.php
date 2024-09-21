@@ -34,7 +34,7 @@ class InverterController extends Controller
             ->whereDate('recorded_at', now())
             ->sum('output');
 
-        return is_numeric($output) ? (string) $output : null;
+        return (string) $output;
     }
 
     protected function outputMonth(): ?string
@@ -44,7 +44,7 @@ class InverterController extends Controller
             ->whereDate('recorded_at', now()->startOfMonth())
             ->sum('output');
 
-        return is_numeric($output) ? (string) $output : null;
+        return (string) $output;
     }
 
     protected function outputYear(): ?string
@@ -54,6 +54,6 @@ class InverterController extends Controller
             ->whereDate('recorded_at', now()->startOfYear())
             ->sum('output');
 
-        return is_numeric($output) ? (string) $output : null;
+        return (string) $output;
     }
 }
