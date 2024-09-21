@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\TimespanUnit;
+use Database\Factories\InverterOutputFactory;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class InverterOutput extends Model
 {
+    /** @use HasFactory<InverterOutputFactory> */
     use HasFactory;
 
     public $casts = [
