@@ -35,11 +35,12 @@ jobs:
         run: php artisan key:generate
 
       - name: Execute tests
-        run: php artisan test
+        run: ./vendor/bin/pest --parallel
 
   phpstan:
-    name: phpstan
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
