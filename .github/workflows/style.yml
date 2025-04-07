@@ -10,7 +10,9 @@ permissions:
 jobs:
   style:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     environment: Testing
+
     steps:
       - uses: actions/checkout@v4
 
