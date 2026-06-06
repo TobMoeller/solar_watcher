@@ -3,10 +3,11 @@
 namespace Database\Factories;
 
 use App\Models\Inverter;
+use App\Models\InverterStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\InverterStatus>
+ * @extends Factory<InverterStatus>
  */
 class InverterStatusFactory extends Factory
 {

@@ -24,7 +24,7 @@ class InverterList extends Component
     }
 
     /**
-     * @return LengthAwarePaginator<Inverter>
+     * @return LengthAwarePaginator<int, Inverter>
      */
     #[Computed]
     public function inverters(): LengthAwarePaginator

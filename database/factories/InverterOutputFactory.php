@@ -4,10 +4,11 @@ namespace Database\Factories;
 
 use App\Enums\TimespanUnit;
 use App\Models\Inverter;
+use App\Models\InverterOutput;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\InverterOutput>
+ * @extends Factory<InverterOutput>
  */
 class InverterOutputFactory extends Factory
 {
