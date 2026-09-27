@@ -17,7 +17,7 @@ class Inverter extends Model
     public $guarded = [];
 
     /**
-     * @return HasMany<InverterOutput>
+     * @return HasMany<InverterOutput, $this>
      */
     public function outputs(): HasMany
     {
@@ -25,7 +25,7 @@ class Inverter extends Model
     }
 
     /**
-     * @return HasMany<InverterStatus>
+     * @return HasMany<InverterStatus, $this>
      */
     public function statuses(): HasMany
     {
@@ -33,7 +33,7 @@ class Inverter extends Model
     }
 
     /**
-     * @return HasOne<InverterStatus>
+     * @return HasOne<InverterStatus, $this>
      */
     public function latestStatus(): HasOne
     {
@@ -45,7 +45,7 @@ class Inverter extends Model
      */
     public function isOnline(): Attribute
     {
-        return new Attribute(
+        return Attribute::make(
             get: fn (): bool => $this->latestStatus?->is_online && $this->latestStatus->recorded_at->greaterThanOrEqualTo(now()->subMinutes(30)),
         );
     }

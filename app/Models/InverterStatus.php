@@ -20,7 +20,7 @@ class InverterStatus extends Model
     public $guarded = [];
 
     /**
-     * @return BelongsTo<Inverter, InverterStatus>
+     * @return BelongsTo<Inverter, $this>
      */
     public function inverter(): BelongsTo
     {

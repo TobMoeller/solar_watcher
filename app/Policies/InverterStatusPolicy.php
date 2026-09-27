@@ -33,13 +33,13 @@ class InverterStatusPolicy
         return $user->can('delete', $inverterStatus->inverter);
     }
 
-    //public function restore(User $user, InverterStatus $inverterStatus): bool
-    //{
+    // public function restore(User $user, InverterStatus $inverterStatus): bool
+    // {
     //    //
-    //}
+    // }
 
-    //public function forceDelete(User $user, InverterStatus $inverterStatus): bool
-    //{
+    // public function forceDelete(User $user, InverterStatus $inverterStatus): bool
+    // {
     //    //
-    //}
+    // }
 }

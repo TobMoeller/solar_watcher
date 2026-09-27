@@ -39,7 +39,7 @@ class InverterCharts extends Component
     }
 
     /**
-     * @return array<int, string>
+     * @return array<int, int>
      */
     #[Computed]
     public function selectableYears(): array
@@ -55,11 +55,12 @@ class InverterCharts extends Component
             ->groupBy('year')
             ->orderBy('year', 'desc')
             ->pluck('year')
-            ->toArray();
+            ->map(fn (mixed $year): int => $this->integerValue($year))
+            ->all();
     }
 
     /**
-     * @return array<int, string>
+     * @return array<int, int>
      */
     #[Computed]
     public function selectableMonths(): array
@@ -76,11 +77,12 @@ class InverterCharts extends Component
             ->groupBy('month')
             ->orderBy('month')
             ->pluck('month')
-            ->toArray();
+            ->map(fn (mixed $month): int => $this->integerValue($month))
+            ->all();
     }
 
     /**
-     * @return array<int, string>
+     * @return array<int, int>
      */
     #[Computed]
     public function selectableDays(): array
@@ -105,7 +107,8 @@ class InverterCharts extends Component
             ->groupBy('day')
             ->orderBy('day')
             ->pluck('day')
-            ->toArray();
+            ->map(fn (mixed $day): int => $this->integerValue($day))
+            ->all();
     }
 
     /**
@@ -140,7 +143,15 @@ class InverterCharts extends Component
                 'datasets' => [
                     [
                         'label' => __('Output in kWh for :year', ['year' => $this->selectedYear]),
-                        'data' => $range->map(fn (int $month) => (string) ($output->where('recorded_at', $date->setMonth($month)->startOfMonth())->first()?->output ?? '0')),
+                        'data' => $range->map(function (int $month) use ($date, $output): string {
+                            $monthlyOutput = $output
+                                ->where('recorded_at', $date->setMonth($month)->startOfMonth())
+                                ->first();
+
+                            return $monthlyOutput instanceof InverterOutput
+                                ? (string) $monthlyOutput->output
+                                : '0';
+                        }),
                         'yAxisID' => 'left-y-axis',
                     ],
                 ],
@@ -196,7 +207,15 @@ class InverterCharts extends Component
                 'datasets' => [
                     [
                         'label' => __('Output in kWh for :month :year', ['month' => $date->locale('EN_en')->monthName, 'year' => $this->selectedYear]),
-                        'data' => $range->map(fn (int $day) => (string) ($output->where('recorded_at', $date->setDay($day))->first()?->output ?? '0')),
+                        'data' => $range->map(function (int $day) use ($date, $output): string {
+                            $dailyOutput = $output
+                                ->where('recorded_at', $date->setDay($day))
+                                ->first();
+
+                            return $dailyOutput instanceof InverterOutput
+                                ? (string) $dailyOutput->output
+                                : '0';
+                        }),
                         'yAxisID' => 'left-y-axis',
                     ],
                 ],
@@ -241,6 +260,9 @@ class InverterCharts extends Component
             ->whereDate('recorded_at', $date)
             ->orderBy('recorded_at')
             ->get();
+
+        $maxUdc = $status->max('udc');
+        $maxIdc = $status->max('idc');
 
         return [
             'status' => '200',
@@ -292,7 +314,7 @@ class InverterCharts extends Component
                     'right-y-axis-1' => [
                         'type' => 'linear',
                         'position' => 'right',
-                        'suggestedMax' => $status->max('udc') * 1.5,
+                        'suggestedMax' => is_numeric($maxUdc) ? (float) $maxUdc * 1.5 : 0,
                         'title' => [
                             'display' => true,
                             'text' => __('Volt'),
@@ -303,7 +325,7 @@ class InverterCharts extends Component
                     'right-y-axis-2' => [
                         'type' => 'linear',
                         'position' => 'right',
-                        'suggestedMax' => $status->max('idc') * 3,
+                        'suggestedMax' => is_numeric($maxIdc) ? (float) $maxIdc * 3 : 0,
                         'title' => [
                             'display' => true,
                             'text' => __('Ampere'),
@@ -314,5 +336,18 @@ class InverterCharts extends Component
                 ],
             ],
         ];
+    }
+
+    private function integerValue(mixed $value): int
+    {
+        if (is_int($value)) {
+            return $value;
+        }
+
+        if (is_string($value) && ctype_digit($value)) {
+            return intval($value);
+        }
+
+        return 0;
     }
 }

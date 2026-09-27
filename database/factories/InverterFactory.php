@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Inverter;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Inverter>
+ * @extends Factory<Inverter>
  */
 class InverterFactory extends Factory
 {

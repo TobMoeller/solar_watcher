@@ -22,7 +22,7 @@ class InverterOutput extends Model
     public $guarded = [];
 
     /**
-     * @return BelongsTo<Inverter, InverterOutput>
+     * @return BelongsTo<Inverter, $this>
      */
     public function inverter(): BelongsTo
     {

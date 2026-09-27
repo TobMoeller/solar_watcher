@@ -7,11 +7,12 @@ on:
       - completed
 
 env:
-  PHP_VERSION: 8.2
+  PHP_VERSION: 8.5
 
 jobs:
   tests:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     timeout-minutes: 15
 
     steps:
@@ -28,17 +29,39 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
-      - name: Copy environment file
-        run: cp .env.example .env
-
-      - name: Generate app key
-        run: php artisan key:generate
+      - name: Check platform requirements
+        run: composer check-platform-reqs
 
       - name: Execute tests
         run: ./vendor/bin/pest --parallel
 
+  frontend:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Audit Node dependencies
+        run: npm audit --audit-level=moderate
+
+      - name: Build frontend assets
+        run: npm run build
+
   phpstan:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     timeout-minutes: 15
 
     steps:
