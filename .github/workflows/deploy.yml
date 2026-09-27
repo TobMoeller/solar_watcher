@@ -1,26 +1,31 @@
 name: Deploy
 
 on:
-  workflow_run:
-    workflows: ["Tests"]
-    types:
-      - completed
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+
+permissions:
+  contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: production-deploy
+  cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-24.04
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     timeout-minutes: 15
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -46,3 +51,4 @@ jobs:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           DEPLOY_REPO: ${{ github.repository }}
+          DEPLOY_SHA: ${{ inputs.ref }}

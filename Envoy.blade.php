@@ -2,6 +2,10 @@
     $host = env('DEPLOY_HOST');
     $user = env('DEPLOY_USER');
     $repo = 'git@github.com:'.env('DEPLOY_REPO').'.git';
+    $revision = env('DEPLOY_SHA');
+    if ($revision !== null && ! preg_match('/\A[0-9a-f]{40}\z/', $revision)) {
+        throw new InvalidArgumentException('DEPLOY_SHA must be a full commit SHA.');
+    }
 
     $dirs = [];
 
@@ -22,10 +26,16 @@
 @servers(['prod' => $serverConnection])
 
 @task('deploy', ['on' => 'prod'])
+    set -e
+
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
     git clone --depth=1 {{ $repo }} {{ $install }}
+    @if ($revision)
+        git -C {{ $install }} fetch --depth=1 origin {{ $revision }}
+        git -C {{ $install }} checkout --detach {{ $revision }}
+    @endif
 
     ln -nfs {{ $envFile }} {{ $install }}/.env
 
